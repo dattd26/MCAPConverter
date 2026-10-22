@@ -1,0 +1,14 @@
+# Core MCAP & Protobuf dependencies
+mcap>=1.1.0
+protobuf>=4.21.0
+
+# MCAP Compression plugins (required for reading/writing zstd or lz4 compressed MCAP files)
+zstandard>=0.21.0
+lz4>=4.0.0
+
+# Image & Video processing (OpenCV, NumPy)
+numpy>=1.24.0
+opencv-python>=4.8.0
+
+# Optional / Testing with ROS2 message schemas
+mcap-ros2-support>=0.5.0

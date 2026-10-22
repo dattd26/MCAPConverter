@@ -41,7 +41,7 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 
 # Cài đặt các thư viện cần thiết
-pip install mcap protobuf opencv-python numpy
+pip install -r requirements.txt
 ```
 
 ---
