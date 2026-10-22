@@ -1,0 +1,14 @@
+# Môi trường ảo Python thông dụng
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Các công cụ quản lý môi trường khác
+.env
+.pipenv/
+.poetry/
+output/*
+__pycache__/*
