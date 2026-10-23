@@ -146,3 +146,15 @@ Bước 3: Nạp ngược video vào MCAP multipart
   - Kết quả: Nạp thành công 71,319 messages vào 3 file part mới trong 3.73s (~19,100 msg/s).
   - Tỷ lệ khớp: Khớp chính xác 100% schemas, channels, số lượng frame video và dữ liệu cảm biến (IMU: 18,293 msgs/part, camera-info: 1 msg/part, tf_static: 1 msg/part).
 
+### Lần chạy: 2026-10-23 (Tối ưu hóa nạp video từ CapCut & Hỗ trợ GPU)
+- **Vấn đề**: Video sau khi chỉnh sửa bằng CapCut xuất ra ở định dạng mặc định H.264 (AVC) khiến `inject_video_to_mcap.py` phải dùng CPU `libx265` nén lại cho cả 2 camera, tốn ~45-50s/part.
+- **Giải pháp tối ưu chuẩn**:
+  1. **Thiết lập CapCut chuẩn**:
+     - **Format**: MP4
+     - **Codec**: Chọn **HEVC** (H.265) thay vì H.264 mặc định -> Kích hoạt chế độ **Lossless Stream Copy** (~1-1.5s/part).
+     - **Resolution**: Giữ nguyên **1920x1200** (khớp camera intrinsics).
+     - **Frame rate**: 30 fps (đồng bộ 1:1 với timeline).
+  2. **Cập nhật script `inject_video_to_mcap.py`**:
+     - Tự động nhận diện GPU tăng tốc phần cứng (Intel Quick Sync `hevc_qsv` / NVIDIA `hevc_nvenc`) khi bắt buộc phải re-encode video H.264.
+     - Tối ưu hóa vòng lặp thông điệp (chuyển import ra ngoài vòng lặp message).
+

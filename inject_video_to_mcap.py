@@ -24,6 +24,59 @@ if hasattr(sys.stderr, "reconfigure"):
 from mcap.reader import make_reader
 from mcap.writer import Writer
 
+from convert_mcap import parse_compressed_video
+
+_DETECTED_ENCODER: Optional[Tuple[str, List[str]]] = None
+
+
+def get_hardware_encoder() -> Tuple[str, List[str]]:
+    """
+    Tự động dò tìm bộ mã hóa phần cứng tốt nhất hỗ trợ HEVC (NVENC -> QSV -> libx265 CPU).
+    Trả về (tên_encoder, danh_sách_tham_số_ffmpeg).
+    """
+    global _DETECTED_ENCODER
+    if _DETECTED_ENCODER is not None:
+        return _DETECTED_ENCODER
+
+    # 1. Thử NVIDIA NVENC
+    test_nvenc = [
+        "ffmpeg", "-v", "error", "-f", "lavfi", "-i", "testsrc=duration=0.05:size=64x64:rate=30",
+        "-c:v", "hevc_nvenc", "-f", "null", "-"
+    ]
+    try:
+        res = subprocess.run(test_nvenc, capture_output=True, timeout=2)
+        if res.returncode == 0:
+            _DETECTED_ENCODER = (
+                "NVIDIA NVENC (hevc_nvenc)",
+                ["-c:v", "hevc_nvenc", "-preset", "p1", "-rc", "constqp", "-qp", "18", "-aud", "1"]
+            )
+            return _DETECTED_ENCODER
+    except Exception:
+        pass
+
+    # 2. Thử Intel QuickSync (QSV)
+    test_qsv = [
+        "ffmpeg", "-v", "error", "-f", "lavfi", "-i", "testsrc=duration=0.05:size=64x64:rate=30",
+        "-pix_fmt", "nv12", "-c:v", "hevc_qsv", "-f", "null", "-"
+    ]
+    try:
+        res = subprocess.run(test_qsv, capture_output=True, timeout=2)
+        if res.returncode == 0:
+            _DETECTED_ENCODER = (
+                "Intel Quick Sync Video (hevc_qsv)",
+                ["-pix_fmt", "nv12", "-c:v", "hevc_qsv", "-preset", "veryfast", "-global_quality", "18", "-aud", "1"]
+            )
+            return _DETECTED_ENCODER
+    except Exception:
+        pass
+
+    # 3. Fallback CPU libx265
+    _DETECTED_ENCODER = (
+        "CPU (libx265 - ultrafast)",
+        ["-c:v", "libx265", "-preset", "ultrafast", "-crf", "18", "-x265-params", "aud=1"]
+    )
+    return _DETECTED_ENCODER
+
 
 def encode_varint(value: int) -> bytes:
     """Mã hóa một số nguyên dương thành định dạng protobuf varint."""
@@ -154,16 +207,10 @@ class MP4FrameStreamer:
                 "pipe:1",
             ])
         else:
-            # Re-encode sang HEVC với AUD delimiter
+            # Re-encode sang HEVC với bộ mã hóa phần cứng (QSV / NVENC / libx265)
+            _, enc_args = get_hardware_encoder()
+            cmd.extend(enc_args)
             cmd.extend([
-                "-c:v",
-                "libx265",
-                "-preset",
-                "ultrafast",
-                "-crf",
-                "18",
-                "-x265-params",
-                "aud=1",
                 "-f",
                 "hevc",
                 "pipe:1",
@@ -232,16 +279,16 @@ def inject_video_to_mcap(
     trim_start_frame: int = 0,
 ):
     if not original_mcap_dir.exists() or not original_mcap_dir.is_dir():
-        print(f"❌ Lỗi: Thư mục MCAP gốc không tồn tại: {original_mcap_dir}")
+        print(f"[LỖI] Thư mục MCAP gốc không tồn tại: {original_mcap_dir}")
         sys.exit(1)
 
     mcap_files = find_mcap_files(original_mcap_dir)
     if not mcap_files:
-        print(f"❌ Lỗi: Không tìm thấy file .mcap nào trong {original_mcap_dir}")
+        print(f"[LỖI] Không tìm thấy file .mcap nào trong {original_mcap_dir}")
         sys.exit(1)
 
     if video_left is None and video_right is None:
-        print("❌ Lỗi: Bạn phải chỉ định ít nhất 1 video thay thế (--video-left hoặc --video-right)!")
+        print("[LỖI] Bạn phải chỉ định ít nhất 1 video thay thế (--video-left hoặc --video-right)!")
         sys.exit(1)
 
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -255,10 +302,26 @@ def inject_video_to_mcap(
         print(f"  VIDEO TOP-LEFT     : {video_left.name}")
     if video_right:
         print(f"  VIDEO TOP-RIGHT    : {video_right.name}")
-    print(f"  CHẾ ĐỘ MÃ HÓA      : {'Re-encode libx265' if reencode else 'Tự động (Copy nếu HEVC)'}")
+    any_reencode = reencode or (video_left and not is_hevc_video(video_left)) or (video_right and not is_hevc_video(video_right))
+    if any_reencode:
+        enc_name, _ = get_hardware_encoder()
+        mode_str = f"Re-encode GPU/CPU: [{enc_name}]"
+    else:
+        mode_str = "Lossless Stream Copy (HEVC detected - Siêu tốc ~1s/part)"
+
+    print(f"  CHẾ ĐỘ MÃ HÓA      : {mode_str}")
     if trim_start_frame > 0:
         print(f"  TRIM OFFSET BẮT ĐẦU: Bỏ qua {trim_start_frame} frame đầu")
     print("=" * 65)
+
+    if any_reencode:
+        print("\n" + "!" * 65)
+        print("  [CHÚ Ý TỐI ƯU TỐC ĐỘ]")
+        print("  Phát hiện video đầu vào không phải HEVC (hoặc kích hoạt re-encode).")
+        print(f"  Đang sử dụng bộ mã hóa tăng tốc: {enc_name}.")
+        print("  MẸO: Để đạt tốc độ copy tức thì (~1-2s/part) và giữ 100% chất lượng gốc,")
+        print("  hãy chọn Codec 'HEVC' (H.265) và độ phân giải 1920x1200 khi xuất từ CapCut!")
+        print("!" * 65 + "\n")
 
     # Đọc session.json nếu có
     session_metadata = None
@@ -271,25 +334,25 @@ def inject_video_to_mcap(
         if candidate.exists():
             with open(candidate, "r", encoding="utf-8") as sf:
                 session_metadata = json.load(sf)
-                print(f"ℹ️  Đã tự động tải metadata: {candidate.name}")
+                print(f"[THÔNG TIN] Đã tự động tải metadata: {candidate.name}")
 
     # Khởi tạo frame streamer cho từng camera được chỉ định
     streamers: Dict[str, MP4FrameStreamer] = {}
     target_topics = {}
 
     if video_left and video_left.exists():
-        print(f"🎬 Khởi tạo giải mã video Top-Left: {video_left}")
+        print(f"[KHỞI TẠO] Giải mã video Top-Left: {video_left}")
         streamers["left"] = MP4FrameStreamer(video_left, reencode=reencode)
         target_topics["/top-left-camera/image-raw"] = ("left", "top_left_camera")
 
     if video_right and video_right.exists():
-        print(f"🎬 Khởi tạo giải mã video Top-Right: {video_right}")
+        print(f"[KHỞI TẠO] Giải mã video Top-Right: {video_right}")
         streamers["right"] = MP4FrameStreamer(video_right, reencode=reencode)
         target_topics["/top-right-camera/image-raw"] = ("right", "top_right_camera")
 
     # Bỏ qua các frame đầu nếu có trim_start_frame
     if trim_start_frame > 0:
-        print(f"⏩ Đang tua qua {trim_start_frame} frame đầu...")
+        print(f"[TRIM] Đang tua qua {trim_start_frame} frame đầu...")
         for streamer in streamers.values():
             for _ in range(trim_start_frame):
                 streamer.next_frame()
@@ -298,7 +361,7 @@ def inject_video_to_mcap(
     total_injected_frames = {k: 0 for k in streamers}
     total_messages_written = 0
 
-    print("\n🚀 Bắt đầu quá trình nạp video vào các file MCAP part...")
+    print("\n[BẮT ĐẦU] Quá trình nạp video vào các file MCAP part...")
 
     # Xử lý từng part MCAP
     for idx, orig_part in enumerate(mcap_files, 1):
@@ -349,8 +412,6 @@ def inject_video_to_mcap(
 
                     if new_frame_data is not None:
                         # Trích xuất timestamp gốc của message
-                        from convert_mcap import parse_compressed_video
-
                         orig_ts, _, _ = parse_compressed_video(msg.data)
                         if orig_ts is None:
                             orig_ts = msg.log_time
@@ -409,7 +470,7 @@ def inject_video_to_mcap(
         )
 
         if is_streamer_exhausted:
-            print("ℹ️  Video MP4 đã hết khung hình (kết thúc phần video đã trim). Dừng nạp.")
+            print("[THÔNG TIN] Video MP4 đã hết khung hình (kết thúc phần video đã trim). Dừng nạp.")
             break
 
     # Đóng các streamer
@@ -418,7 +479,7 @@ def inject_video_to_mcap(
 
     total_time = time.perf_counter() - start_time
     print("\n" + "=" * 65)
-    print("🎉 HOÀN TẤT NẠP VIDEO VÀO MCAP THÀNH CÔNG!")
+    print("[THÀNH CÔNG] HOÀN TẤT NẠP VIDEO VÀO MCAP THÀNH CÔNG!")
     print(f"   - Thư mục MCAP mới: {output_dir}")
     for k in streamers:
         print(f"   - Đã nạp camera [{k}]: {total_injected_frames[k]:,} frames")

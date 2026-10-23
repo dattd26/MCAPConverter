@@ -149,7 +149,7 @@ def check_missing_parts(files: List[Path]):
 
     if gaps:
         print("\n" + "=" * 60)
-        print("⚠️  CẢNH BÁO: Phát hiện các part bị gián đoạn trong thư mục:")
+        print("[CẢNH BÁO] Phát hiện các part bị gián đoạn trong thư mục:")
         for start, end in gaps:
             if start == end:
                 print(f"   - Thiếu part_{start:05d}.mcap")
@@ -323,10 +323,10 @@ def convert_folder(
     sample_topic = list(active_cameras.values())[0]["topic"]
     if override_fps is not None and override_fps > 0:
         fps = override_fps
-        print(f"⏱️  FPS được chỉ định: {fps:.3f}")
+        print(f"[FPS] Chỉ định: {fps:.3f}")
     else:
         fps = estimate_fps(mcap_files[0], sample_topic)
-        print(f"⏱️  Tự động nhận diện FPS: {fps:.3f}")
+        print(f"[FPS] Tự động nhận diện: {fps:.3f}")
 
     # Khởi tạo các FFmpegStreamer cho từng camera
     streamers: Dict[str, FFmpegStreamer] = {}
@@ -338,7 +338,7 @@ def convert_folder(
         streamer = FFmpegStreamer(out_path, fps=fps, codec="hevc", reencode_h264=reencode_h264)
         streamers[cam_key] = streamer
         topic_to_cam_key[cam_info["topic"]] = cam_key
-        print(f"🎥 Khởi tạo xuất {cam_info['name']} -> {out_path.name}")
+        print(f"[KHỞI TẠO] Xuất {cam_info['name']} -> {out_path.name}")
 
     monitored_topics = list(topic_to_cam_key.keys())
 
@@ -347,7 +347,7 @@ def convert_folder(
     parts_metadata = []
     global_frame_idx = 0
 
-    print("\n🚀 Bắt đầu chuyển đổi dữ liệu...")
+    print("\n[BẮT ĐẦU] Chuyển đổi dữ liệu...")
 
     for idx, mcap_path in enumerate(mcap_files, 1):
         part_start_time = time.perf_counter()
@@ -398,10 +398,10 @@ def convert_folder(
                 f"| Tốc độ: {part_fps:5.0f} fps ({part_duration:4.2f}s)"
             )
         except Exception as e:
-            print(f"❌ Lỗi khi đọc file {mcap_path.name}: {e}")
+            print(f"[LỖI] Khi đọc file {mcap_path.name}: {e}")
 
 
-    print("\n⏳ Đang kết thúc đóng gói các file video MP4...")
+    print("\nĐang hoàn tất đóng gói các file video MP4...")
     for cam_key, streamer in streamers.items():
         ret = streamer.close()
         out_path = streamer.output_path
@@ -409,14 +409,14 @@ def convert_folder(
             file_size_mb = out_path.stat().st_size / (1024 * 1024)
             duration_sec = streamer.frames_written / streamer.fps if streamer.fps > 0 else 0
             print(
-                f"✅ Hoàn tất [{active_cameras[cam_key]['name']}]:\n"
+                f"[HOÀN TẤT] [{active_cameras[cam_key]['name']}]:\n"
                 f"   - File: {out_path}\n"
                 f"   - Số frames: {streamer.frames_written:,}\n"
                 f"   - Thời lượng: {duration_sec / 60:.2f} phút ({duration_sec:.1f} giây)\n"
                 f"   - Kích thước: {file_size_mb:.2f} MB"
             )
         else:
-            print(f"❌ FFmpeg trả về mã lỗi {ret} cho camera {cam_key}!")
+            print(f"[LỖI] FFmpeg trả về mã lỗi {ret} cho camera {cam_key}!")
             if streamer.stderr_lines:
                 print("   Chi tiết lỗi FFmpeg:")
                 for line in streamer.stderr_lines[-10:]:
@@ -446,10 +446,10 @@ def convert_folder(
     with open(session_file, "w", encoding="utf-8") as sf:
         json.dump(session_data, sf, indent=2)
 
-    print(f"\n📋 Đã lưu metadata phiên chuyển đổi tại: {session_file}")
+    print(f"\n[THÔNG TIN] Đã lưu metadata phiên chuyển đổi tại: {session_file}")
 
     total_time = time.perf_counter() - start_time
-    print(f"\n🎉 Hoàn thành toàn bộ tiến trình trong {total_time:.2f} giây! ({total_frames / total_time:.1f} fps tổng cộng)")
+    print(f"\n[THÀNH CÔNG] Hoàn thành toàn bộ tiến trình trong {total_time:.2f} giây! ({total_frames / total_time:.1f} fps tổng cộng)")
 
 
 def main():
