@@ -109,7 +109,34 @@ Dữ liệu trong các file MCAP thuộc bộ dataset này sử dụng mã hóa 
     --output-dir "D:\path\to\output_mcap_dir"
 ```
 
-### 4.3. `extract_video.py` & `test.py`
+### 4.3. `merge_mcap.py` (Script Gộp MCAP Multipart & Đa Session)
+- **Mục đích**: Gộp các part `part_xxxxx.mcap` trong 1 session HOẶC gộp đồng thời nhiều thư mục session thành 1 file `.mcap` duy nhất.
+- **Tính năng**:
+  - Lossless copy trực tiếp ở cấp độ message/chunk, không cần giải mã lại bitstream video hay protobuf.
+  - Tốc độ cực nhanh: **~30,000 - 40,000 messages/giây** (~108 MB/s).
+  - Tự động nhận diện thứ tự part và cảnh báo khoảng part bị thiếu (Gap Detection).
+  - Tự động tịnh tiến timeline liền mạch (**Seamless Timeline Shift**) giữa các session: xử lý triệt để vấn đề mỗi session bị reset timestamp về 0.
+  - Đồng bộ sâu cả timestamp container MCAP (`msg.log_time`/`msg.publish_time`) lẫn timestamp trong Protobuf payload của `foxglove.CompressedVideo`.
+  - Hỗ trợ nén chunk bằng **Zstandard (ZSTD)** hoặc **LZ4** giúp tối ưu dung lượng và hỗ trợ random seek trên Foxglove Studio.
+  - Bảo toàn 100% video stream, metadata (`session-metadata`, `capture-quality`), camera-info, IMU và timestamps.
+  - Hỗ trợ truyền 1 thư mục cha chứa nhiều session con, hoặc liệt kê nhiều thư mục session riêng lẻ.
+
+**Cú pháp CLI (PowerShell 7)**:
+```powershell
+# Gộp toàn bộ part trong 1 thư mục session
+.\.venv\Scripts\python merge_mcap.py "D:\path\to\mcap_folder"
+
+# Gộp TẤT CẢ các session con trong 1 thư mục cha (ví dụ: TSTECO_SPA_20261026)
+.\.venv\Scripts\python merge_mcap.py "D:\TST\HumanEgo_Videos\TSTECO_SPA_20261026"
+
+# Gộp nhiều session cụ thể
+.\.venv\Scripts\python merge_mcap.py "D:\path\to\session_1" "D:\path\to\session_2" -o "D:\MCAPConverter\output\merged.mcap"
+
+# Xem trước danh sách các session và dung lượng mà không ghi file (Dry run)
+.\.venv\Scripts\python merge_mcap.py "D:\TST\HumanEgo_Videos\TSTECO_SPA_20261026" --dry-run
+```
+
+### 4.4. `extract_video.py` & `test.py`
 - Các script thử nghiệm ban đầu trong quá trình nghiên cứu cấu trúc dữ liệu.
 
 ---
@@ -157,4 +184,3 @@ Bước 3: Nạp ngược video vào MCAP multipart
   2. **Cập nhật script `inject_video_to_mcap.py`**:
      - Tự động nhận diện GPU tăng tốc phần cứng (Intel Quick Sync `hevc_qsv` / NVIDIA `hevc_nvenc`) khi bắt buộc phải re-encode video H.264.
      - Tối ưu hóa vòng lặp thông điệp (chuyển import ra ngoài vòng lặp message).
-
