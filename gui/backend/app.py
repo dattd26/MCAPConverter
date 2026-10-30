@@ -51,6 +51,15 @@ is_task_running = False
 current_task_name = ""
 
 
+MAIN_EVENT_LOOP: Optional[asyncio.AbstractEventLoop] = None
+
+
+@app.on_event("startup")
+async def startup_event():
+    global MAIN_EVENT_LOOP
+    MAIN_EVENT_LOOP = asyncio.get_running_loop()
+
+
 async def broadcast_log(line: str):
     """Gửi một dòng log tới toàn bộ WebSockets và lưu vào lịch sử."""
     global log_history
@@ -69,15 +78,21 @@ async def broadcast_log(line: str):
 
 
 def sync_broadcast_log(line: str):
-    """Bọc đồng bộ cho callback gọi từ thread khác."""
+    """Bọc đồng bộ cho callback gọi từ thread khác để gửi về WebSocket."""
+    global MAIN_EVENT_LOOP
+    print(line)
     try:
-        loop = asyncio.get_event_loop()
-        if loop.is_running():
-            asyncio.run_coroutine_threadsafe(broadcast_log(line), loop)
+        if MAIN_EVENT_LOOP and MAIN_EVENT_LOOP.is_running():
+            asyncio.run_coroutine_threadsafe(broadcast_log(line), MAIN_EVENT_LOOP)
         else:
-            print(line)
+            try:
+                loop = asyncio.get_running_loop()
+                if loop and loop.is_running():
+                    asyncio.run_coroutine_threadsafe(broadcast_log(line), loop)
+            except Exception:
+                pass
     except Exception:
-        print(line)
+        pass
 
 
 # ==========================================
@@ -85,6 +100,9 @@ def sync_broadcast_log(line: str):
 # ==========================================
 @app.websocket("/ws/logs")
 async def websocket_logs(websocket: WebSocket):
+    global MAIN_EVENT_LOOP
+    if MAIN_EVENT_LOOP is None or not MAIN_EVENT_LOOP.is_running():
+        MAIN_EVENT_LOOP = asyncio.get_running_loop()
     await websocket.accept()
     connected_websockets.add(websocket)
     try:

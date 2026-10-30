@@ -742,6 +742,103 @@
 }
 
 /* ==========================================================================
+   TERMINAL & CONSOLE OUTPUT
+   ========================================================================== */
+.stream-console {
+  background-color: var(--color-paper);
+  border-top: var(--rule-hair) solid var(--color-rule);
+  width: 100%;
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+}
+
+.stream-console-head {
+  height: 40px;
+  background-color: var(--color-paper-2);
+  border-bottom: var(--rule-hair) solid var(--color-rule);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-inline: var(--gutter);
+}
+
+.stream-title-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.stream-indicator {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-muted);
+}
+
+.stream-indicator.running {
+  background-color: var(--color-accent);
+}
+
+.stream-title {
+  font-size: var(--text-xs);
+  font-weight: 500;
+  color: var(--color-ink-2);
+  font-family: var(--font-mono);
+}
+
+.stream-task-chip {
+  font-size: var(--text-xs);
+  color: var(--color-accent);
+  background-color: var(--color-paper-3);
+  padding: var(--space-3xs) var(--space-xs);
+  border-radius: var(--radius-pill);
+  border: var(--rule-hair) solid var(--color-rule-2);
+}
+
+.stream-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.stream-console-body {
+  height: 180px;
+  overflow-y: auto;
+  padding: var(--space-xs) var(--gutter);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.6;
+  color: var(--color-ink-2);
+  background-color: var(--color-paper);
+}
+
+.stream-console.collapsed .stream-console-body {
+  display: none;
+}
+
+.stream-line {
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.stream-line.success {
+  color: var(--color-success);
+}
+
+.stream-line.warning {
+  color: var(--color-warning);
+}
+
+.stream-line.error {
+  color: var(--color-error);
+}
+
+.stream-line.info {
+  color: var(--color-accent);
+}
+
+/* ==========================================================================
    RESPONSIVE QUERIES
    ========================================================================== */
 @media (max-width: 60rem) {

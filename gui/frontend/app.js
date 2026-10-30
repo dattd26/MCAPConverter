@@ -285,27 +285,89 @@ function initWebSocket() {
 
 function updateRunningState(isRunning, taskName = "") {
   AppState.isTaskRunning = isRunning;
+  const indicator = document.getElementById("term-status-indicator");
   const taskChip = document.getElementById("task-status-chip");
   const taskText = document.getElementById("task-status-text");
+  const termTaskChip = document.getElementById("term-task-name");
   const btnCancel = document.getElementById("btn-cancel-task");
 
   if (isRunning) {
+    if (indicator) indicator.className = "stream-indicator running";
     if (taskChip) taskChip.style.display = "inline-flex";
     if (taskText) taskText.textContent = taskName || "Đang xử lý…";
+    if (termTaskChip) {
+      termTaskChip.style.display = "inline-block";
+      termTaskChip.textContent = taskName || "Đang xử lý…";
+    }
     if (btnCancel) btnCancel.style.display = "inline-flex";
   } else {
+    if (indicator) indicator.className = "stream-indicator";
     if (taskChip) taskChip.style.display = "none";
+    if (termTaskChip) termTaskChip.style.display = "none";
     if (btnCancel) btnCancel.style.display = "none";
   }
 }
 
 function initTerminal() {
-  // Không hiển thị live log trên giao diện theo yêu cầu
+  const btnClear = document.getElementById("btn-clear-log");
+  if (btnClear) {
+    btnClear.addEventListener("click", () => {
+      const body = document.getElementById("terminal-body");
+      if (body) body.innerHTML = "";
+    });
+  }
+
+  const btnCopy = document.getElementById("btn-copy-log");
+  if (btnCopy) {
+    btnCopy.addEventListener("click", () => {
+      const body = document.getElementById("terminal-body");
+      if (body) {
+        navigator.clipboard.writeText(body.innerText).then(() => {
+          alert("Đã sao chép toàn bộ log vào Clipboard!");
+        });
+      }
+    });
+  }
+
+  const btnToggle = document.getElementById("btn-toggle-terminal");
+  if (btnToggle) {
+    btnToggle.addEventListener("click", () => {
+      const termWrap = document.getElementById("terminal-drawer");
+      if (termWrap) {
+        termWrap.classList.toggle("collapsed");
+        btnToggle.textContent = termWrap.classList.contains("collapsed") ? "Mở rộng" : "Thu gọn";
+      }
+    });
+  }
 }
 
 function appendTerminalLine(text, forcedClass = null) {
-  // Ghi log vào console của trình duyệt, không hiển thị trên giao diện người dùng
   console.log(text);
+  const body = document.getElementById("terminal-body");
+  if (!body) return;
+
+  const line = document.createElement("div");
+  line.className = "stream-line";
+
+  if (forcedClass) {
+    line.classList.add(forcedClass);
+  } else if (text.includes("[LỖI") || text.includes("Error") || text.includes("Exception") || text.includes("Thất bại") || text.includes("THẤT BẠI")) {
+    line.classList.add("error");
+  } else if (text.includes("[CẢNH BÁO]") || text.includes("Warning") || text.includes("Thiếu: part_")) {
+    line.classList.add("warning");
+  } else if (text.includes("[HOÀN THÀNH") || text.includes("[THÀNH CÔNG]") || text.includes("SUCCESS") || text.includes("HOÀN TẤT")) {
+    line.classList.add("success");
+  } else if (text.includes("[BẮT ĐẦU") || text.includes("[THÔNG TIN]") || text.includes("==") || text.includes("[QUÉT")) {
+    line.classList.add("info");
+  }
+
+  line.textContent = text;
+  body.appendChild(line);
+
+  const autoScrollEl = document.getElementById("term-autoscroll");
+  if (autoScrollEl && autoScrollEl.checked) {
+    body.scrollTop = body.scrollHeight;
+  }
 }
 
 // ==========================================

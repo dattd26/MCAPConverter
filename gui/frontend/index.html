@@ -509,6 +509,37 @@
 
   </main>
 
+  <!-- ==========================================
+       BOTTOM STREAM CONSOLE LOG VIEWER
+       ========================================== -->
+  <footer class="stream-console" id="terminal-drawer">
+    <div class="stream-console-head">
+      <div class="stream-title-group">
+        <span class="stream-indicator" id="term-status-indicator"></span>
+        <span class="stream-title">Console và tiến trình tác vụ</span>
+        <span class="stream-task-chip" id="term-task-name" style="display: none;">Đang chạy…</span>
+      </div>
+      <div class="stream-actions">
+        <label style="font-size: var(--text-xs); color: var(--color-muted); display: flex; align-items: center; gap: var(--space-2xs); cursor: pointer; user-select: none;">
+          <input type="checkbox" id="term-autoscroll" checked class="part-select-chk">
+          <span>Tự cuộn</span>
+        </label>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-toggle-terminal">
+          Thu gọn
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-log">
+          Xóa log
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-log">
+          Sao chép
+        </button>
+      </div>
+    </div>
+    <div class="stream-console-body" id="terminal-body">
+      <div class="stream-line info">[HỆ THỐNG] MCAP Studio v2.0 đã sẵn sàng. Kết nối backend thành công.</div>
+    </div>
+  </footer>
+
   <script src="./app.js"></script>
 </body>
 </html>
