@@ -42,6 +42,7 @@
   --color-accent: oklch(89% 0.19 126);
   --color-accent-hi: oklch(93% 0.17 126);
   --color-accent-ink: oklch(19% 0.04 126);
+  --color-accent-subtle: oklch(24% 0.04 126);
   --color-focus: oklch(89% 0.19 126);
 
   --color-success: oklch(82% 0.16 142);

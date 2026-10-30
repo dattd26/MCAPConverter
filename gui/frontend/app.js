@@ -524,13 +524,48 @@ function initStep3() {
   if (selectAllCheckbox) {
     selectAllCheckbox.addEventListener("change", (e) => {
       const isChecked = e.target.checked;
-      const checkboxes = document.querySelectorAll(".part-select-chk");
-      checkboxes.forEach(cb => {
-        cb.checked = isChecked;
+      const allRows = document.querySelectorAll("#parts-table-tbody tr");
+      allRows.forEach(row => {
+        const cb = row.querySelector(".part-select-chk");
+        if (cb) {
+          cb.checked = isChecked;
+          row.classList.toggle("selected", isChecked);
+        }
       });
       updateSelectedPartsCounter();
     });
   }
+
+  // Phím tắt bàn phím: Enter mở parts đã chọn, Escape bỏ chọn tất cả
+  window.addEventListener("keydown", (e) => {
+    if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) {
+      return;
+    }
+    const drawer = document.getElementById("step3-parts-drawer");
+    if (!drawer || drawer.style.display === "none") return;
+
+    if (e.key === "Enter") {
+      const selected = getSelectedPartPaths();
+      if (selected.length > 0) {
+        e.preventDefault();
+        openFoxglove(selected);
+      }
+    } else if (e.key === "Escape") {
+      const selected = getSelectedPartPaths();
+      if (selected.length > 0) {
+        e.preventDefault();
+        const allRows = document.querySelectorAll("#parts-table-tbody tr");
+        allRows.forEach(row => {
+          const cb = row.querySelector(".part-select-chk");
+          if (cb) cb.checked = false;
+          row.classList.remove("selected");
+        });
+        const selectAll = document.getElementById("step3-select-all-parts");
+        if (selectAll) selectAll.checked = false;
+        updateSelectedPartsCounter();
+      }
+    }
+  });
 
   // Nút mở các part đã chọn trên Foxglove
   const btnOpenSelected = document.getElementById("btn-open-selected-foxglove");
@@ -690,16 +725,45 @@ async function scanStep3Parts(dirPath) {
   }
 }
 
+// Trạng thái cho thao tác chọn dải và kéo chuột trên bảng Part
+let lastClickedPartIndex = -1;
+let isRowDragging = false;
+let rowDragTargetChecked = false;
+
+window.addEventListener("mouseup", () => {
+  if (isRowDragging) {
+    isRowDragging = false;
+    document.body.style.userSelect = "";
+  }
+});
+
 function renderPartsTable(parts) {
   const tbody = document.getElementById("parts-table-tbody");
   tbody.innerHTML = "";
 
   const selectAll = document.getElementById("step3-select-all-parts");
   if (selectAll) selectAll.checked = false;
+  lastClickedPartIndex = -1;
   updateSelectedPartsCounter();
+
+  const setRowCheckedState = (tr, chk, checked) => {
+    chk.checked = checked;
+    tr.classList.toggle("selected", checked);
+  };
+
+  const updateSelectAllStatus = () => {
+    if (selectAll) {
+      const allCheckboxes = tbody.querySelectorAll(".part-select-chk");
+      const allChecked = allCheckboxes.length > 0 && Array.from(allCheckboxes).every(c => c.checked);
+      selectAll.checked = allChecked;
+    }
+  };
+
+  const allRows = [];
 
   parts.forEach((p, idx) => {
     const tr = document.createElement("tr");
+    tr.setAttribute("data-index", idx);
 
     // Checkbox column
     const tdCheck = document.createElement("td");
@@ -708,15 +772,10 @@ function renderPartsTable(parts) {
     chk.type = "checkbox";
     chk.className = "part-select-chk";
     chk.setAttribute("data-path", p.path);
-    chk.style.accentColor = "var(--color-accent)";
-    chk.style.cursor = "pointer";
     chk.addEventListener("change", () => {
+      tr.classList.toggle("selected", chk.checked);
+      updateSelectAllStatus();
       updateSelectedPartsCounter();
-      if (selectAll) {
-        const allCheckboxes = document.querySelectorAll(".part-select-chk");
-        const allChecked = Array.from(allCheckboxes).every(c => c.checked);
-        selectAll.checked = allChecked;
-      }
     });
     tdCheck.appendChild(chk);
 
@@ -743,7 +802,8 @@ function renderPartsTable(parts) {
     btnFox.className = "btn btn-foxglove btn-sm";
     btnFox.textContent = "Mở riêng part này";
     btnFox.title = "Mở duy nhất part này trên Foxglove Studio";
-    btnFox.addEventListener("click", () => {
+    btnFox.addEventListener("click", (e) => {
+      e.stopPropagation();
       openFoxglove(p.path);
     });
 
@@ -755,6 +815,50 @@ function renderPartsTable(parts) {
     tr.appendChild(tdSize);
     tr.appendChild(tdAction);
     tbody.appendChild(tr);
+
+    allRows.push({ tr, chk, idx });
+
+    // Click dòng / Shift-click / Drag chọn
+    tr.addEventListener("mousedown", (e) => {
+      if (e.target.closest("button")) return;
+      if (e.button !== 0) return; // Chỉ nhận chuột trái
+      e.preventDefault(); // Tránh browser chọn bôi đen text khi kéo
+
+      isRowDragging = true;
+      document.body.style.userSelect = "none";
+
+      if (e.shiftKey && lastClickedPartIndex >= 0) {
+        const start = Math.min(lastClickedPartIndex, idx);
+        const end = Math.max(lastClickedPartIndex, idx);
+        for (let i = start; i <= end; i++) {
+          setRowCheckedState(allRows[i].tr, allRows[i].chk, true);
+        }
+        updateSelectAllStatus();
+        updateSelectedPartsCounter();
+      } else {
+        const nextState = !chk.checked;
+        rowDragTargetChecked = nextState;
+        setRowCheckedState(tr, chk, nextState);
+        lastClickedPartIndex = idx;
+        updateSelectAllStatus();
+        updateSelectedPartsCounter();
+      }
+    });
+
+    // Kéo chuột qua dòng để quét chọn
+    tr.addEventListener("mouseenter", () => {
+      if (isRowDragging) {
+        setRowCheckedState(tr, chk, rowDragTargetChecked);
+        updateSelectAllStatus();
+        updateSelectedPartsCounter();
+      }
+    });
+
+    // Double-click mở ngay part trên Foxglove
+    tr.addEventListener("dblclick", (e) => {
+      if (e.target.closest("button")) return;
+      openFoxglove(p.path);
+    });
   });
 }
 
