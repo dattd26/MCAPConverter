@@ -431,3 +431,10 @@ def get_index():
     if index_file.exists():
         return FileResponse(str(index_file))
     return JSONResponse({"message": "MCAPConverter API Server is running. Frontend not found."})
+
+@app.get("/{file_name}")
+def get_root_file(file_name: str):
+    target = FRONTEND_DIR / file_name
+    if target.exists() and target.is_file():
+        return FileResponse(str(target))
+    raise HTTPException(status_code=404, detail="File not found")

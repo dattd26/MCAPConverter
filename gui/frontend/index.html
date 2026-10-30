@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MCAP Studio - Xử Lý Video & Bộ Dữ Liệu MCAP Chuyên Nghiệp</title>
-  <meta name="description" content="Giao diện studio chuyển đổi MCAP sang MP4, nạp video CapCut, tách folder dưới 30 phút với Foxglove, và gộp batch MCAP.">
+  <title>MCAP Studio - Xử Lý Video & Dữ Liệu MCAP</title>
+  <meta name="description" content="Studio chuyển đổi MCAP sang MP4, nạp video CapCut, tách folder dưới 30 phút với Foxglove, và gộp batch MCAP.">
 
-  <!-- Google Fonts -->
+  <!-- Geologica Google Font for Vantage Theme -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Geologica:wght,CRSV,SHRP@200..600,0,0..100&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="/static/styles.css">
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
 
@@ -20,29 +20,29 @@
        ========================================== -->
   <header class="app-header">
     <div class="brand-wrapper">
-      <div class="brand-logo-icon">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
           <polygon points="23 7 16 12 23 17 23 7"></polygon>
           <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
         </svg>
       </div>
       <div class="brand-title-wrap">
-        <h1>MCAP Studio <span class="brand-version">v2.0</span></h1>
-        <p class="brand-subtitle">Bộ công cụ xử lý 2 chiều MCAP Multipart & CapCut Pipeline</p>
+        <h1>MCAP Studio</h1>
+        <p class="brand-subtitle">Phiên bản 2.0 · Xử lý hai chiều MCAP multipart và CapCut pipeline</p>
       </div>
     </div>
 
     <div class="header-status-group">
       <div id="foxglove-status-chip" class="status-badge" title="Tình trạng cài đặt Foxglove Studio Desktop">
-        <span class="status-dot"></span>
-        <span id="foxglove-status-text">Đang kiểm tra Foxglove...</span>
+        <span class="status-indicator-dot"></span>
+        <span id="foxglove-status-text">Đang kiểm tra Foxglove…</span>
       </div>
       <div id="encoder-status-chip" class="status-badge ready" title="Bộ mã hóa phần cứng">
-        <span class="status-dot"></span>
-        <span id="encoder-status-text">GPU Hardware Ready</span>
+        <span class="status-indicator-dot"></span>
+        <span id="encoder-status-text">Phần cứng video sẵn sàng</span>
       </div>
       <button id="btn-cancel-task" class="btn btn-danger btn-sm" style="display: none;" title="Dừng tác vụ đang chạy">
-        ⏹ Dừng tác vụ
+        Dừng tác vụ
       </button>
     </div>
   </header>
@@ -53,41 +53,41 @@
   <div class="stepper-container">
     <nav class="stepper-track" aria-label="Quy trình 4 bước">
       
-      <div class="step-item active" id="step-nav-1" data-step="1">
+      <div class="step-item active" id="step-nav-1" data-step="1" tabindex="0" role="button" aria-label="Bước 1: Trích xuất MCAP sang MP4">
         <div class="step-number">1</div>
         <div class="step-info">
-          <span class="step-title">MCAP ➔ MP4</span>
+          <span class="step-title">MCAP sang MP4</span>
           <span class="step-desc">Trích xuất video 2 camera</span>
         </div>
       </div>
 
       <div class="step-divider"></div>
 
-      <div class="step-item" id="step-nav-2" data-step="2">
+      <div class="step-item" id="step-nav-2" data-step="2" tabindex="0" role="button" aria-label="Bước 2: Nạp ngược CapCut sang MCAP">
         <div class="step-number">2</div>
         <div class="step-info">
-          <span class="step-title">CapCut ➔ MCAP</span>
-          <span class="step-desc">Nạp ngược video đã sửa</span>
+          <span class="step-title">CapCut sang MCAP</span>
+          <span class="step-desc">Nạp video đã chỉnh sửa</span>
         </div>
       </div>
 
       <div class="step-divider"></div>
 
-      <div class="step-item" id="step-nav-3" data-step="3">
+      <div class="step-item" id="step-nav-3" data-step="3" tabindex="0" role="button" aria-label="Bước 3: Foxglove và tách part">
         <div class="step-number">3</div>
         <div class="step-info">
-          <span class="step-title">Foxglove & Tách Part</span>
-          <span class="step-desc">Tách folder &lt; 30 phút (_P1, _P2)</span>
+          <span class="step-title">Foxglove và tách part</span>
+          <span class="step-desc">Chia thư mục dưới 30 phút</span>
         </div>
       </div>
 
       <div class="step-divider"></div>
 
-      <div class="step-item" id="step-nav-4" data-step="4">
+      <div class="step-item" id="step-nav-4" data-step="4" tabindex="0" role="button" aria-label="Bước 4: Gộp batch MCAP">
         <div class="step-number">4</div>
         <div class="step-info">
-          <span class="step-title">Gộp Batch MCAP</span>
-          <span class="step-desc">Gộp thành 1 file trong từng folder</span>
+          <span class="step-title">Gộp batch MCAP</span>
+          <span class="step-desc">Tạo một file trong mỗi thư mục con</span>
         </div>
       </div>
 
@@ -103,27 +103,24 @@
          TAB 1: MCAP TO MP4
          ---------------------------------------- -->
     <section class="tab-pane active" id="tab-step-1">
-      <div class="glass-card">
-        <div class="card-header-bar">
-          <div class="card-title-group">
-            <h2>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              Bước 1: Trích Xuất Video MP4 từ MCAP Multipart
-            </h2>
-            <p>Đọc trực tiếp các file <code>part_xxxxx.mcap</code> và xuất thành video MP4 lossless (~10,000 FPS) để chỉnh sửa trong CapCut.</p>
+      <div class="panel-container">
+        <div class="panel-header-bar">
+          <div class="panel-title-group">
+            <h2>Bước 1: Trích xuất video MP4 từ MCAP multipart</h2>
+            <p>Đọc trực tiếp các file <code>part_xxxxx.mcap</code> và xuất video MP4 lossless (~10,000 FPS) để chỉnh sửa trong CapCut.</p>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="step1-src-dir">
-              <span>Thư mục MCAP nguồn:</span>
+              <span>Thư mục MCAP nguồn</span>
               <span class="helper">Thư mục chứa các file part_00000.mcap</span>
             </label>
             <div class="input-with-button">
               <input type="text" id="step1-src-dir" class="input-control" placeholder="D:\path\to\mcap_session_folder">
               <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-step1-src">
-                📁 Chọn thư mục
+                Chọn thư mục
               </button>
             </div>
           </div>
@@ -131,16 +128,16 @@
 
         <div class="form-row grid-2">
           <div class="form-group">
-            <label class="form-label">Camera xuất:</label>
+            <label class="form-label">Camera xuất</label>
             <div class="pill-group" id="step1-camera-pills">
-              <div class="pill-option active" data-val="both">Cả 2 Camera (Left + Right)</div>
+              <div class="pill-option active" data-val="both">Cả 2 camera (Left và Right)</div>
               <div class="pill-option" data-val="left">Chỉ Top-Left</div>
               <div class="pill-option" data-val="right">Chỉ Top-Right</div>
             </div>
           </div>
 
           <div class="form-group">
-            <label class="form-label">Định dạng mã hóa video:</label>
+            <label class="form-label">Định dạng mã hóa video</label>
             <div class="pill-group" id="step1-codec-pills">
               <div class="pill-option active" data-val="copy">Lossless H.265 Copy (~10,000 FPS)</div>
               <div class="pill-option" data-val="h264">Re-encode H.264 (Tương thích)</div>
@@ -151,28 +148,28 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="step1-out-dir">
-              <span>Thư mục xuất MP4 (Tùy chọn):</span>
-              <span class="helper">Để trống nếu muốn lưu cùng thư mục nguồn</span>
+              <span>Thư mục xuất MP4 (Tùy chọn)</span>
+              <span class="helper">Mặc định: Cùng thư mục nguồn</span>
             </label>
             <div class="input-with-button">
               <input type="text" id="step1-out-dir" class="input-control" placeholder="Mặc định: Cùng thư mục nguồn">
               <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-step1-out">
-                📁 Chọn thư mục
+                Chọn thư mục
               </button>
             </div>
           </div>
         </div>
 
-        <div class="card-footer-actions">
+        <div class="panel-footer-actions">
           <button type="button" class="btn btn-secondary" id="btn-open-step1-folder">
-            📂 Mở thư mục nguồn
+            Mở thư mục nguồn
           </button>
-          <div style="display: flex; gap: 12px;">
+          <div style="display: flex; gap: var(--space-sm);">
             <button type="button" class="btn btn-primary btn-lg" id="btn-run-step1">
-              🚀 Bắt Đầu Trích Xuất Video
+              Bắt đầu trích xuất
             </button>
             <button type="button" class="btn btn-secondary btn-lg" id="btn-next-to-step2">
-              Sang Bước 2 ➔
+              Sang bước 2
             </button>
           </div>
         </div>
@@ -183,40 +180,34 @@
          TAB 2: CAPCUT TO MCAP
          ---------------------------------------- -->
     <section class="tab-pane" id="tab-step-2">
-      <div class="glass-card">
-        <div class="card-header-bar">
-          <div class="card-title-group">
-            <h2>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path><polyline points="16 16 12 12 8 16"></polyline></svg>
-              Bước 2: Nạp Ngược Video CapCut vào Cấu Trúc MCAP Multipart
-            </h2>
+      <div class="panel-container">
+        <div class="panel-header-bar">
+          <div class="panel-title-group">
+            <h2>Bước 2: Nạp ngược video CapCut vào cấu trúc MCAP multipart</h2>
             <p>Nhận video MP4 đã chỉnh sửa từ CapCut và nạp ngược lại vào từng part MCAP, bảo toàn 100% cảm biến IMU, TF và camera-info.</p>
           </div>
         </div>
 
-        <!-- Tip Box -->
-        <div class="tip-banner">
-          <div class="tip-icon">💡</div>
-          <div class="tip-content">
-            <h4>Mẹo Xuất CapCut Đạt Tốc Độ Cao Nhất (Lossless Repack ~1-2s/part):</h4>
-            <ul>
-              <li><strong>Định dạng</strong>: MP4 | <strong>Bộ mã hóa (Codec)</strong>: Chọn <strong>HEVC / H.265</strong> (thay vì H.264 mặc định).</li>
-              <li><strong>Độ phân giải</strong>: Giữ nguyên <strong>1920 × 1200</strong> | <strong>Khung hình (FPS)</strong>: <strong>30 FPS</strong>.</li>
-              <li>Khi xuất đúng chuẩn này, hệ thống sẽ copy trực tiếp luồng bitstream mà không phải nén lại qua CPU/GPU!</li>
-            </ul>
-          </div>
+        <!-- Clean notice box without emoji -->
+        <div class="notice-box">
+          <h3>Thông số xuất CapCut chuẩn (Lossless Repack ~1-2s/part)</h3>
+          <ul>
+            <li>Định dạng: MP4 | Bộ mã hóa (Codec): Chọn HEVC / H.265 (thay vì H.264 mặc định).</li>
+            <li>Độ phân giải: Giữ nguyên 1920 × 1200 | Khung hình (FPS): 30 FPS.</li>
+            <li>Xuất đúng chuẩn này giúp hệ thống sao chép trực tiếp bitstream không qua nén lại.</li>
+          </ul>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="step2-orig-dir">
-              <span>Thư mục MCAP gốc (Session ban đầu):</span>
-              <span class="helper">Cần để đọc metadata cảm biến IMU và timestamp</span>
+              <span>Thư mục MCAP gốc (Session ban đầu)</span>
+              <span class="helper">Dùng để đọc metadata cảm biến IMU và timestamp</span>
             </label>
             <div class="input-with-button">
               <input type="text" id="step2-orig-dir" class="input-control" placeholder="D:\path\to\original_mcap_session">
               <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-step2-orig">
-                📁 Chọn thư mục
+                Chọn thư mục
               </button>
             </div>
           </div>
@@ -225,26 +216,26 @@
         <div class="form-row grid-2">
           <div class="form-group">
             <label class="form-label" for="step2-video-left">
-              <span>Video Top-Left đã sửa (MP4):</span>
+              <span>Video Top-Left đã sửa (MP4)</span>
               <span class="helper">Bỏ trống nếu không thay đổi camera trái</span>
             </label>
             <div class="input-with-button">
               <input type="text" id="step2-video-left" class="input-control" placeholder="D:\path\to\edited_left.mp4">
               <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-step2-left">
-                🎬 Chọn file MP4
+                Chọn file MP4
               </button>
             </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="step2-video-right">
-              <span>Video Top-Right đã sửa (MP4):</span>
+              <span>Video Top-Right đã sửa (MP4)</span>
               <span class="helper">Bỏ trống nếu không thay đổi camera phải</span>
             </label>
             <div class="input-with-button">
               <input type="text" id="step2-video-right" class="input-control" placeholder="D:\path\to\edited_right.mp4">
               <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-step2-right">
-                🎬 Chọn file MP4
+                Chọn file MP4
               </button>
             </div>
           </div>
@@ -253,7 +244,7 @@
         <div class="form-row grid-2">
           <div class="form-group">
             <label class="form-label" for="step2-encoder-select">
-              <span>Bộ mã hóa (Nếu MP4 là H.264 cần nén lại sang H.265):</span>
+              <span>Bộ mã hóa (Khi video cần nén lại sang H.265)</span>
             </label>
             <select id="step2-encoder-select" class="select-control">
               <option value="auto">Tự động phát hiện (Ưu tiên GPU)</option>
@@ -266,28 +257,28 @@
 
           <div class="form-group">
             <label class="form-label" for="step2-out-dir">
-              <span>Thư mục MCAP sau khi nạp (Repacked):</span>
+              <span>Thư mục MCAP sau khi nạp (Repacked)</span>
               <span class="helper">Mặc định: Thư mục nguồn_repacked</span>
             </label>
             <div class="input-with-button">
               <input type="text" id="step2-out-dir" class="input-control" placeholder="D:\path\to\repacked_session">
               <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-step2-out">
-                📁 Chọn thư mục
+                Chọn thư mục
               </button>
             </div>
           </div>
         </div>
 
-        <div class="card-footer-actions">
+        <div class="panel-footer-actions">
           <button type="button" class="btn btn-secondary" id="btn-open-step2-folder">
-            📂 Mở thư mục gốc
+            Mở thư mục gốc
           </button>
-          <div style="display: flex; gap: 12px;">
-            <button type="button" class="btn btn-cyan btn-lg" id="btn-run-step2">
-              ⚡ Nạp Video Vào MCAP Multipart
+          <div style="display: flex; gap: var(--space-sm);">
+            <button type="button" class="btn btn-primary btn-lg" id="btn-run-step2">
+              Nạp video vào MCAP
             </button>
             <button type="button" class="btn btn-secondary btn-lg" id="btn-next-to-step3">
-              Sang Bước 3 (Tách Folder) ➔
+              Sang bước 3
             </button>
           </div>
         </div>
@@ -298,13 +289,10 @@
          TAB 3: FOXGLOVE & SPLITTER
          ---------------------------------------- -->
     <section class="tab-pane" id="tab-step-3">
-      <div class="glass-card">
-        <div class="card-header-bar">
-          <div class="card-title-group">
-            <h2>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"></circle><circle cx="6" cy="18" r="3"></circle><line x1="20" y1="4" x2="8.12" y2="15.88"></line><line x1="14.47" y1="14.48" x2="20" y2="20"></line><line x1="8.12" y1="8.12" x2="12" y2="12"></line></svg>
-              Bước 3: Mở Foxglove & Tách Folder Dưới 30 Phút
-            </h2>
+      <div class="panel-container">
+        <div class="panel-header-bar">
+          <div class="panel-title-group">
+            <h2>Bước 3: Mở Foxglove và tách folder dưới 30 phút</h2>
             <p>Mở từng part trên Foxglove Studio để xem xét mốc thời gian, sau đó thiết lập dải part để chia thư mục theo mẫu <code>DIENTHOAI_20261024_02356_P1/P2/P3</code>.</p>
           </div>
         </div>
@@ -312,54 +300,51 @@
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="step3-target-dir">
-              <span>Thư mục chứa các file MCAP cần tách:</span>
+              <span>Thư mục chứa các file MCAP cần tách</span>
               <span class="helper">Thư mục vừa nạp ở Bước 2 hoặc bất kỳ thư mục MCAP nào</span>
             </label>
             <div class="input-with-button">
               <input type="text" id="step3-target-dir" class="input-control" placeholder="D:\path\to\mcap_folder_to_split">
               <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-step3-dir">
-                📁 Chọn thư mục
+                Chọn thư mục
               </button>
-              <button type="button" class="btn btn-primary btn-sm" id="btn-scan-step3" style="margin-left: 6px;">
-                🔍 Quét danh sách Part
+              <button type="button" class="btn btn-primary btn-sm" id="btn-scan-step3" style="margin-left: var(--space-xs);">
+                Quét danh sách part
               </button>
             </div>
           </div>
         </div>
 
-        <!-- Stats strip -->
+        <!-- Flattened Stats strip -->
         <div class="stats-strip" id="step3-stats-strip" style="display: none;">
-          <div class="stat-card">
-            <span class="stat-label">Tổng số Part</span>
+          <div class="stat-cell">
+            <span class="stat-label">Tổng số part</span>
             <span class="stat-value" id="stat-total-parts">0</span>
           </div>
-          <div class="stat-card">
+          <div class="stat-cell">
             <span class="stat-label">Thời lượng ước tính</span>
             <span class="stat-value" id="stat-total-duration">~0 phút</span>
           </div>
-          <div class="stat-card">
+          <div class="stat-cell">
             <span class="stat-label">Tổng dung lượng</span>
             <span class="stat-value" id="stat-total-size">0 MB</span>
           </div>
-          <div class="stat-card">
+          <div class="stat-cell">
             <span class="stat-label">Tình trạng gián đoạn</span>
             <span class="stat-value ok" id="stat-gaps-status">Liền mạch</span>
           </div>
         </div>
 
         <!-- Segments Configuration Area -->
-        <div class="segments-container" id="step3-segments-wrapper" style="display: none;">
+        <div class="segments-block" id="step3-segments-wrapper" style="display: none;">
           <div class="segments-header">
-            <h3>
-              <span>📋 Thiết Lập Các Khoảng Chia Thư Mục Con</span>
-              <span style="font-size: 0.78rem; font-weight: normal; color: var(--text-dim);">(Quy tắc: mỗi nhóm ≤ 30 part ~ 30 phút)</span>
-            </h3>
-            <div style="display: flex; gap: 8px;">
-              <button type="button" class="btn btn-cyan btn-sm" id="btn-suggest-segments">
-                ✨ Gợi ý chia tự động (≤ 30 part)
+            <h3>Thiết lập các khoảng chia thư mục con (Mỗi nhóm ≤ 30 part)</h3>
+            <div style="display: flex; gap: var(--space-xs);">
+              <button type="button" class="btn btn-secondary btn-sm" id="btn-suggest-segments">
+                Gợi ý chia tự động (≤ 30 part)
               </button>
               <button type="button" class="btn btn-secondary btn-sm" id="btn-add-segment">
-                ➕ Thêm nhóm
+                Thêm nhóm
               </button>
             </div>
           </div>
@@ -371,19 +356,19 @@
 
         <!-- Parts Table Drawer (Click to inspect each part on Foxglove) -->
         <div class="parts-drawer-wrapper" id="step3-parts-drawer" style="display: none;">
-          <div class="drawer-toggle" id="btn-toggle-parts-drawer">
-            <span>👁️ Bấm để xem danh sách chi tiết từng part & nút mở trực tiếp trên Foxglove Studio</span>
-            <span id="drawer-arrow">▼</span>
+          <div class="drawer-toggle" id="btn-toggle-parts-drawer" role="button" tabindex="0">
+            <span>Danh sách chi tiết từng part và mở trên Foxglove Studio</span>
+            <span id="drawer-arrow">[Xem chi tiết]</span>
           </div>
           <div class="parts-table-wrap" id="parts-table-container">
             <table class="custom-table">
               <thead>
                 <tr>
-                  <th>Tên file</th>
-                  <th>Số Part</th>
-                  <th>Thời lượng ước tính</th>
-                  <th>Dung lượng</th>
-                  <th style="text-align: right;">Thao tác Foxglove</th>
+                  <th scope="col">Tên file</th>
+                  <th scope="col">Số part</th>
+                  <th scope="col">Thời lượng ước tính</th>
+                  <th scope="col">Dung lượng</th>
+                  <th scope="col" style="text-align: right;">Thao tác Foxglove</th>
                 </tr>
               </thead>
               <tbody id="parts-table-tbody">
@@ -393,16 +378,16 @@
           </div>
         </div>
 
-        <div class="card-footer-actions">
+        <div class="panel-footer-actions">
           <button type="button" class="btn btn-foxglove" id="btn-open-first-part-foxglove" disabled>
-            🦊 Mở Part Đầu Tiên Trên Foxglove
+            Mở part đầu trên Foxglove
           </button>
-          <div style="display: flex; gap: 12px;">
+          <div style="display: flex; gap: var(--space-sm);">
             <button type="button" class="btn btn-primary btn-lg" id="btn-execute-split" disabled>
-              📦 Thực Hiện Di Chuyển (Move) Vào Các Folder Con
+              Di chuyển vào các folder con
             </button>
             <button type="button" class="btn btn-secondary btn-lg" id="btn-next-to-step4">
-              Sang Bước 4 (Gộp Batch) ➔
+              Sang bước 4
             </button>
           </div>
         </div>
@@ -413,30 +398,27 @@
          TAB 4: BATCH MERGE
          ---------------------------------------- -->
     <section class="tab-pane" id="tab-step-4">
-      <div class="glass-card">
-        <div class="card-header-bar">
-          <div class="card-title-group">
-            <h2>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-              Bước 4: Gộp Batch Các Thư Mục Đã Tách Thành MCAP Duy Nhất
-            </h2>
-            <p>Tự động quét tất cả các thư mục con <code>_P1, _P2, _P3...</code> và gộp toàn bộ part thành 1 file <code>.mcap</code> duy nhất nằm ngay trong từng thư mục đó.</p>
+      <div class="panel-container">
+        <div class="panel-header-bar">
+          <div class="panel-title-group">
+            <h2>Bước 4: Gộp batch các thư mục đã tách thành MCAP duy nhất</h2>
+            <p>Tự động quét tất cả các thư mục con <code>_P1, _P2, _P3…</code> và gộp toàn bộ part thành 1 file <code>.mcap</code> duy nhất nằm ngay trong từng thư mục đó.</p>
           </div>
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label class="form-label" for="step4-parent-dir">
-              <span>Thư mục cha chứa các folder con đã tách (_P1, _P2...):</span>
+              <span>Thư mục cha chứa các folder con đã tách (_P1, _P2…)</span>
               <span class="helper">Hệ thống sẽ tự nhận diện mọi thư mục con có chứa part MCAP</span>
             </label>
             <div class="input-with-button">
               <input type="text" id="step4-parent-dir" class="input-control" placeholder="D:\path\to\parent_session_folder">
               <button type="button" class="btn btn-secondary btn-sm" id="btn-browse-step4-dir">
-                📁 Chọn thư mục
+                Chọn thư mục
               </button>
-              <button type="button" class="btn btn-primary btn-sm" id="btn-scan-step4" style="margin-left: 6px;">
-                🔍 Quét các thư mục con
+              <button type="button" class="btn btn-primary btn-sm" id="btn-scan-step4" style="margin-left: var(--space-xs);">
+                Quét các thư mục con
               </button>
             </div>
           </div>
@@ -444,7 +426,7 @@
 
         <div class="form-row grid-2">
           <div class="form-group">
-            <label class="form-label">Chế độ nén Chunk MCAP:</label>
+            <label class="form-label">Chế độ nén chunk MCAP</label>
             <div class="pill-group" id="step4-compression-pills">
               <div class="pill-option active" data-val="zstd">Zstandard (ZSTD) - Khuyên dùng</div>
               <div class="pill-option" data-val="lz4">LZ4 (Nhanh)</div>
@@ -453,26 +435,26 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Quy cách lưu file kết quả:</label>
-            <div style="background: var(--bg-input); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 11px 14px; font-size: 0.85rem; color: #34d399;">
-              ✅ Lưu trực tiếp bên trong từng thư mục con (ví dụ: <code>folder_P1/folder_P1.mcap</code>) và giữ nguyên các part gốc.
+            <label class="form-label">Quy cách lưu file kết quả</label>
+            <div style="background-color: var(--color-paper); border: var(--rule-hair) solid var(--color-rule); border-radius: var(--radius-input); padding: var(--space-xs) var(--space-sm); font-size: var(--text-xs); color: var(--color-success);">
+              Lưu trực tiếp bên trong từng thư mục con (ví dụ: <code>folder_P1/folder_P1.mcap</code>) và giữ nguyên các part gốc.
             </div>
           </div>
         </div>
 
         <!-- Target Subfolders Table -->
-        <div class="segments-container" id="step4-targets-wrapper" style="display: none;">
+        <div class="segments-block" id="step4-targets-wrapper" style="display: none;">
           <div class="segments-header">
-            <h3>📁 Danh Sách Thư Mục Sẽ Được Gộp (<span id="step4-target-count">0</span> thư mục)</h3>
+            <h3>Danh sách thư mục sẽ được gộp (<span id="step4-target-count" class="num">0</span> thư mục)</h3>
           </div>
           <table class="custom-table">
             <thead>
               <tr>
-                <th>Tên Thư Mục Con</th>
-                <th>Số Lượng Part</th>
-                <th>Dung Lượng Gốc</th>
-                <th>Tên File Sau Khi Gộp</th>
-                <th>Tình Trạng</th>
+                <th scope="col">Tên thư mục con</th>
+                <th scope="col">Số lượng part</th>
+                <th scope="col">Dung lượng gốc</th>
+                <th scope="col">Tên file sau khi gộp</th>
+                <th scope="col">Tình trạng</th>
               </tr>
             </thead>
             <tbody id="step4-targets-tbody">
@@ -481,12 +463,12 @@
           </table>
         </div>
 
-        <div class="card-footer-actions">
+        <div class="panel-footer-actions">
           <button type="button" class="btn btn-secondary" id="btn-open-step4-folder">
-            📂 Mở thư mục trong Explorer
+            Mở thư mục trong Explorer
           </button>
           <button type="button" class="btn btn-primary btn-lg" id="btn-run-step4" disabled>
-            ✨ Gộp Tất Cả Các Thư Mục Con
+            Gộp tất cả thư mục con
           </button>
         </div>
       </div>
@@ -501,18 +483,18 @@
     <div class="terminal-header">
       <div class="terminal-title-group">
         <span class="terminal-indicator" id="term-status-indicator"></span>
-        <span class="terminal-title">LIVE CONSOLE &amp; TASK OUTPUT</span>
-        <span class="terminal-task-chip" id="term-task-name" style="display: none;">Đang chạy...</span>
+        <span class="terminal-title">Console và tiến trình tác vụ</span>
+        <span class="terminal-task-chip" id="term-task-name" style="display: none;">Đang chạy…</span>
       </div>
       <div class="terminal-actions">
-        <label style="font-size: 0.75rem; color: var(--text-dim); display: flex; align-items: center; gap: 6px; cursor: pointer;">
+        <label style="font-size: var(--text-xs); color: var(--color-muted); display: flex; align-items: center; gap: var(--space-2xs); cursor: pointer;">
           <input type="checkbox" id="term-autoscroll" checked> Tự cuộn
         </label>
         <button type="button" class="btn btn-secondary btn-sm" id="btn-clear-log">
-          🧹 Xóa Log
+          Xóa log
         </button>
         <button type="button" class="btn btn-secondary btn-sm" id="btn-copy-log">
-          📋 Sao Chép
+          Sao chép
         </button>
       </div>
     </div>
@@ -521,6 +503,6 @@
     </div>
   </footer>
 
-  <script src="/static/app.js"></script>
+  <script src="./app.js"></script>
 </body>
 </html>

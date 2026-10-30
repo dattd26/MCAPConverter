@@ -532,7 +532,7 @@ function initStep3() {
     const tableWrap = document.getElementById("parts-table-container");
     const arrow = document.getElementById("drawer-arrow");
     tableWrap.classList.toggle("open");
-    arrow.textContent = tableWrap.classList.contains("open") ? "▲" : "▼";
+    arrow.textContent = tableWrap.classList.contains("open") ? "[Thu gọn]" : "[Xem chi tiết]";
   });
 
   btnSuggest.addEventListener("click", () => {
@@ -594,7 +594,7 @@ function initStep3() {
 
       appendTerminalLine(`[HOÀN THÀNH] Đã tách thành công! Di chuyển ${data.total_moved} parts vào:`, "success");
       data.created_subfolders.forEach(sf => {
-        appendTerminalLine(`  📁 ${sf.name}: ${sf.moved_parts} parts (part ${sf.start_part} ➔ ${sf.end_part})`, "success");
+        appendTerminalLine(`  [Tạo thư mục] ${sf.name}: ${sf.moved_parts} parts (part ${sf.start_part} -> ${sf.end_part})`, "success");
       });
 
       alert(`Tách thư mục thành công! Đã tạo ${data.created_subfolders.length} thư mục con.`);
@@ -684,7 +684,7 @@ function renderPartsTable(parts) {
 
     const btnFox = document.createElement("button");
     btnFox.className = "btn btn-foxglove btn-sm";
-    btnFox.textContent = "🦊 Mở Foxglove";
+    btnFox.textContent = "Mở Foxglove";
     btnFox.addEventListener("click", () => {
       openFoxglove(p.path);
     });
@@ -779,10 +779,10 @@ function createSegmentRow(name, startPart, endPart, index) {
     const count = Math.max(0, e - s + 1);
     if (count <= 30) {
       badge.className = "segment-badge safe";
-      badge.innerHTML = `🟢 ${count} parts (~${count}p) - Đạt chuẩn ≤30p`;
+      badge.textContent = `${count} parts (~${count}p) - Đạt chuẩn ≤30p`;
     } else {
       badge.className = "segment-badge danger";
-      badge.innerHTML = `🔴 ${count} parts (~${count}p) - CẢNH BÁO > 30p!`;
+      badge.textContent = `${count} parts (~${count}p) - Cảnh báo > 30p`;
     }
   }
 
@@ -796,7 +796,7 @@ function createSegmentRow(name, startPart, endPart, index) {
   const btnDelete = document.createElement("button");
   btnDelete.type = "button";
   btnDelete.className = "btn btn-danger btn-sm";
-  btnDelete.innerHTML = "🗑️";
+  btnDelete.textContent = "Xóa";
   btnDelete.title = "Xóa nhóm này";
   btnDelete.addEventListener("click", () => {
     row.remove();
@@ -966,24 +966,26 @@ function renderStep4Table(targets) {
     const tr = document.createElement("tr");
 
     const tdName = document.createElement("td");
-    tdName.innerHTML = `📁 <strong>${t.name}</strong>`;
+    tdName.innerHTML = `<strong>${t.name}</strong>`;
 
     const tdParts = document.createElement("td");
+    tdParts.className = "num";
     tdParts.textContent = `${t.parts_count} parts`;
 
     const tdSize = document.createElement("td");
+    tdSize.className = "num";
     tdSize.textContent = `${t.total_size_mb} MB`;
 
     const tdOutput = document.createElement("td");
     tdOutput.textContent = `${t.name}.mcap`;
     tdOutput.style.fontFamily = "var(--font-mono)";
-    tdOutput.style.color = "#38bdf8";
+    tdOutput.style.color = "var(--color-accent)";
 
     const tdStatus = document.createElement("td");
     if (t.already_merged) {
-      tdStatus.innerHTML = `<span style="color: #34d399;">✅ Đã có file gộp</span>`;
+      tdStatus.innerHTML = `<span style="color: var(--color-success);">Đã có file gộp</span>`;
     } else {
-      tdStatus.innerHTML = `<span style="color: var(--text-dim);">⏳ Chưa gộp</span>`;
+      tdStatus.innerHTML = `<span style="color: var(--color-muted);">Chưa gộp</span>`;
     }
 
     tr.appendChild(tdName);

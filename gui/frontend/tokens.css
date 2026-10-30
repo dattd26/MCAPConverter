@@ -1,0 +1,76 @@
+:root {
+  color-scheme: dark;
+  --space-3xs: 2px;
+  --space-2xs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-2xl: 48px;
+  --space-3xl: 64px;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.35rem;
+  --text-2xl: 1.65rem;
+
+  --text-display: 1.65rem;
+  --text-section: 1.25rem;
+  --text-title: 1rem;
+  --text-lead: 0.95rem;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 180ms;
+
+  --color-paper: oklch(13.5% 0.012 235);
+  --color-paper-2: oklch(17% 0.014 235);
+  --color-paper-3: oklch(21% 0.016 235);
+  --color-ink: oklch(95% 0.006 230);
+  --color-ink-2: oklch(82% 0.012 230);
+  --color-muted: oklch(66% 0.016 230);
+  --color-dim: oklch(50% 0.015 235);
+
+  --color-rule: oklch(27% 0.014 235);
+  --color-rule-2: oklch(34% 0.016 235);
+  --color-rule-subtle: oklch(22% 0.014 235);
+
+  --color-accent: oklch(89% 0.19 126);
+  --color-accent-hi: oklch(93% 0.17 126);
+  --color-accent-ink: oklch(19% 0.04 126);
+  --color-focus: oklch(89% 0.19 126);
+
+  --color-success: oklch(82% 0.16 142);
+  --color-success-bg: oklch(24% 0.04 142);
+  --color-success-border: oklch(38% 0.08 142);
+
+  --color-warning: oklch(84% 0.16 85);
+  --color-warning-bg: oklch(25% 0.04 85);
+  --color-warning-border: oklch(40% 0.09 85);
+
+  --color-error: oklch(72% 0.18 27);
+  --color-error-bg: oklch(22% 0.05 27);
+  --color-error-border: oklch(36% 0.10 27);
+
+  --color-foxglove: oklch(75% 0.18 45);
+  --color-foxglove-bg: oklch(24% 0.04 45);
+  --color-foxglove-border: oklch(38% 0.09 45);
+
+  --font-display: "Geologica", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Geologica", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+
+  --radius-card: 4px;
+  --radius-input: 4px;
+  --radius-pill: 999px;
+  --rule-hair: 1px;
+
+  --container: 1360px;
+  --gutter: 32px;
+  --tracking-display: -0.025em;
+  --display-weight: 400;
+}
