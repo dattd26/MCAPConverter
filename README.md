@@ -6,6 +6,10 @@ Bộ công cụ xử lý dữ liệu video hai chiều hiệu năng cao chuyên 
 
 ## 📌 Tính Năng Nổi Bật
 
+- **Giao diện trực quan MCAP Studio (Mới)**:
+  - Khởi động 1-click qua `run_gui.bat` hoặc PowerShell.
+  - Tích hợp trọn vẹn luồng 4 bước: Trích xuất MP4 ➔ Nạp ngược CapCut ➔ Mở Foxglove & Tách folder dưới 30p (`_P1`, `_P2`) ➔ Gộp batch MCAP.
+  - Hỗ trợ nút chọn thư mục/file native Windows Explorer, stream log thời gian thực và tự động liên kết Foxglove Studio Desktop.
 - **Chuyển đổi 2 chiều hoàn chỉnh**:
   - **Chiều đi (`convert_mcap.py`)**: Tách xuất đồng thời cả 2 camera (Top-Left & Top-Right) thành các video `.mp4` hoàn chỉnh, kèm file đồng bộ `session.json`.
   - **Chiều về (`inject_video_to_mcap.py`)**: Nhận video `.mp4` đã qua xử lý (làm mờ mặt, gắn nhãn, hậu kỳ...) và nạp ngược lại vào cấu trúc các file `part_xxxxx.mcap` gốc.
@@ -48,7 +52,22 @@ pip install -r requirements.txt
 
 ---
 
-## 🚀 Hướng Dẫn Sử Dụng Chi Tiết
+## 🖥️ Khởi Động Giao Diện Đồ Họa (MCAP Studio GUI)
+
+Để sử dụng toàn bộ quy trình 4 bước qua giao diện trực quan thân thiện:
+
+```powershell
+# Cách 1 (Khuyên dùng): Click đúp chuột vào file run_gui.bat hoặc chạy qua PowerShell:
+.\run_gui.bat
+
+# Cách 2: Chạy trực tiếp qua Python
+.\.venv\Scripts\python gui_app.py
+```
+> Trình duyệt web sẽ tự động bật tại địa chỉ `http://localhost:8000`.
+
+---
+
+## 🚀 Hướng Dẫn Sử Dụng Chi Tiết (CLI)
 
 ```
                        QUY TRÌNH LÀM VIỆC HAI CHIỀU

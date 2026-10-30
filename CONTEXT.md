@@ -184,3 +184,13 @@ Bước 3: Nạp ngược video vào MCAP multipart
   2. **Cập nhật script `inject_video_to_mcap.py`**:
      - Tự động nhận diện GPU tăng tốc phần cứng (Intel Quick Sync `hevc_qsv` / NVIDIA `hevc_nvenc`) khi bắt buộc phải re-encode video H.264.
      - Tối ưu hóa vòng lặp thông điệp (chuyển import ra ngoài vòng lặp message).
+
+### Lần chạy: 2026-10-30 (Phát triển MCAP Studio GUI Trực Quan 4 Bước)
+- **Mục tiêu**: Xây dựng giao diện Web App cục bộ hoàn chỉnh (FastAPI + Modern Dark Web UI) theo quy trình 4 bước khép kín.
+- **Thực thi**:
+  1. Khởi động nhanh 1-click qua `run_gui.bat` / `run_gui.ps1` / `gui_app.py`.
+  2. Bước 1: Trích xuất MP4 từ MCAP multipart (`convert_mcap.py`).
+  3. Bước 2: Nạp ngược video CapCut vào MCAP (`inject_video_to_mcap_v2.py`), tích hợp cẩm nang cấu hình CapCut lossless.
+  4. Bước 3: Mở Foxglove Studio Desktop xem video & Tách các part vào thư mục con quy ước `..._P1/P2/P3` (mỗi nhóm <= 30 part ~ 30 phút).
+  5. Bước 4: Gộp batch tất cả các thư mục con thành 1 file MCAP duy nhất (`<folder_P1>.mcap`) đặt bên trong từng folder và bảo toàn part gốc.
+  6. Tích hợp nút bật cửa sổ chọn thư mục/file native Windows Explorer, tự động tìm thấy Foxglove Studio tại `AppData\Local\Programs\desktop\Foxglove.exe`, stream log qua WebSocket theo thời gian thực.
