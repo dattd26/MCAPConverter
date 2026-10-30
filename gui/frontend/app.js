@@ -210,15 +210,22 @@ async function openExplorer(path) {
   }
 }
 
-// Helper mở Foxglove
-async function openFoxglove(path) {
-  if (!path) return;
+// Helper mở Foxglove (hỗ trợ 1 file hoặc danh sách nhiều file)
+async function openFoxglove(target) {
+  if (!target) return;
+  const isArray = Array.isArray(target);
+  if (isArray && target.length === 0) return;
+  const payload = isArray
+    ? { paths: target, path: target[0] || "" }
+    : { path: target, paths: [target] };
+  const desc = isArray ? `${target.length} tập tin` : target;
+
   try {
-    appendTerminalLine(`[FOXGLOVE] Đang mở ${path} trên Foxglove Studio...`, "info");
+    appendTerminalLine(`[FOXGLOVE] Đang mở ${desc} trên Foxglove Studio...`, "info");
     const res = await fetch("/api/open-foxglove", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ path }),
+      body: JSON.stringify(payload),
     });
     const data = await res.json();
     if (!data.success) {
@@ -512,12 +519,45 @@ function initStep3() {
     addNewSegmentRow();
   });
 
-  btnOpenFirstPart.addEventListener("click", () => {
-    if (AppState.step3ScanData && AppState.step3ScanData.parts.length > 0) {
-      const firstPartPath = AppState.step3ScanData.parts[0].path;
-      openFoxglove(firstPartPath);
+  // Chọn / bỏ chọn tất cả part
+  const selectAllCheckbox = document.getElementById("step3-select-all-parts");
+  if (selectAllCheckbox) {
+    selectAllCheckbox.addEventListener("change", (e) => {
+      const isChecked = e.target.checked;
+      const checkboxes = document.querySelectorAll(".part-select-chk");
+      checkboxes.forEach(cb => {
+        cb.checked = isChecked;
+      });
+      updateSelectedPartsCounter();
+    });
+  }
+
+  // Nút mở các part đã chọn trên Foxglove
+  const btnOpenSelected = document.getElementById("btn-open-selected-foxglove");
+  if (btnOpenSelected) {
+    btnOpenSelected.addEventListener("click", () => {
+      const selectedPaths = getSelectedPartPaths();
+      if (selectedPaths.length === 0) {
+        alert("Vui lòng tích chọn ít nhất 1 part trong bảng!");
+        return;
+      }
+      openFoxglove(selectedPaths);
+    });
+  }
+
+  // Nút mở cả thư mục trên Foxglove
+  const btnOpenFolder = document.getElementById("btn-open-folder-foxglove");
+  const btnOpenFolderMain = document.getElementById("btn-open-folder-foxglove-main");
+  const triggerFolderOpen = () => {
+    const dir = document.getElementById("step3-target-dir").value.trim();
+    if (!dir) {
+      alert("Vui lòng chọn thư mục MCAP trước!");
+      return;
     }
-  });
+    openFoxglove(dir);
+  };
+  if (btnOpenFolder) btnOpenFolder.addEventListener("click", triggerFolderOpen);
+  if (btnOpenFolderMain) btnOpenFolderMain.addEventListener("click", triggerFolderOpen);
 
   btnExecuteSplit.addEventListener("click", async () => {
     const dir = document.getElementById("step3-target-dir").value.trim();
@@ -576,6 +616,28 @@ function initStep3() {
   });
 }
 
+function getSelectedPartPaths() {
+  const checkboxes = document.querySelectorAll(".part-select-chk:checked");
+  const paths = [];
+  checkboxes.forEach(cb => {
+    const p = cb.getAttribute("data-path");
+    if (p) paths.push(p);
+  });
+  return paths;
+}
+
+function updateSelectedPartsCounter() {
+  const selectedPaths = getSelectedPartPaths();
+  const counterEl = document.getElementById("step3-selected-count");
+  if (counterEl) {
+    counterEl.textContent = selectedPaths.length;
+  }
+  const btnOpenSelected = document.getElementById("btn-open-selected-foxglove");
+  if (btnOpenSelected) {
+    btnOpenSelected.disabled = (selectedPaths.length === 0);
+  }
+}
+
 async function scanStep3Parts(dirPath) {
   try {
     appendTerminalLine(`[QUÉT PART] Đang quét thư mục: ${dirPath}...`, "info");
@@ -609,7 +671,8 @@ async function scanStep3Parts(dirPath) {
     }
 
     // Hiển thị nút Foxglove & Tách
-    document.getElementById("btn-open-first-part-foxglove").disabled = (data.total_parts === 0);
+    const btnOpenFolderMain = document.getElementById("btn-open-folder-foxglove-main");
+    if (btnOpenFolderMain) btnOpenFolderMain.disabled = (data.total_parts === 0);
     document.getElementById("btn-execute-split").disabled = (data.total_parts === 0);
 
     // Điền bảng Parts chi tiết
@@ -631,20 +694,46 @@ function renderPartsTable(parts) {
   const tbody = document.getElementById("parts-table-tbody");
   tbody.innerHTML = "";
 
-  parts.forEach(p => {
+  const selectAll = document.getElementById("step3-select-all-parts");
+  if (selectAll) selectAll.checked = false;
+  updateSelectedPartsCounter();
+
+  parts.forEach((p, idx) => {
     const tr = document.createElement("tr");
+
+    // Checkbox column
+    const tdCheck = document.createElement("td");
+    tdCheck.style.textAlign = "center";
+    const chk = document.createElement("input");
+    chk.type = "checkbox";
+    chk.className = "part-select-chk";
+    chk.setAttribute("data-path", p.path);
+    chk.style.accentColor = "var(--color-accent)";
+    chk.style.cursor = "pointer";
+    chk.addEventListener("change", () => {
+      updateSelectedPartsCounter();
+      if (selectAll) {
+        const allCheckboxes = document.querySelectorAll(".part-select-chk");
+        const allChecked = Array.from(allCheckboxes).every(c => c.checked);
+        selectAll.checked = allChecked;
+      }
+    });
+    tdCheck.appendChild(chk);
 
     const tdName = document.createElement("td");
     tdName.textContent = p.filename;
     tdName.style.fontFamily = "var(--font-mono)";
 
     const tdPart = document.createElement("td");
+    tdPart.className = "num";
     tdPart.textContent = p.part_number !== null ? `#${p.part_number}` : "-";
 
     const tdDur = document.createElement("td");
+    tdDur.className = "num";
     tdDur.textContent = `~${p.est_duration_min} phút`;
 
     const tdSize = document.createElement("td");
+    tdSize.className = "num";
     tdSize.textContent = `${p.size_mb} MB`;
 
     const tdAction = document.createElement("td");
@@ -652,12 +741,14 @@ function renderPartsTable(parts) {
 
     const btnFox = document.createElement("button");
     btnFox.className = "btn btn-foxglove btn-sm";
-    btnFox.textContent = "Mở Foxglove";
+    btnFox.textContent = "Mở riêng part này";
+    btnFox.title = "Mở duy nhất part này trên Foxglove Studio";
     btnFox.addEventListener("click", () => {
       openFoxglove(p.path);
     });
 
     tdAction.appendChild(btnFox);
+    tr.appendChild(tdCheck);
     tr.appendChild(tdName);
     tr.appendChild(tdPart);
     tr.appendChild(tdDur);

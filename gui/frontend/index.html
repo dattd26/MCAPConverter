@@ -365,9 +365,31 @@
             <span id="drawer-arrow">[Xem chi tiết]</span>
           </div>
           <div class="parts-table-wrap" id="parts-table-container">
+            <!-- Batch Toolbar inside drawer -->
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: var(--space-xs) var(--space-md); background-color: var(--color-paper-2); border-bottom: var(--rule-hair) solid var(--color-rule);">
+              <div style="display: flex; align-items: center; gap: var(--space-sm);">
+                <label style="display: flex; align-items: center; gap: var(--space-xs); font-size: var(--text-xs); cursor: pointer; user-select: none;">
+                  <input type="checkbox" id="step3-select-all-parts" style="accent-color: var(--color-accent); cursor: pointer;">
+                  <span>Chọn tất cả part</span>
+                </label>
+                <span style="font-size: var(--text-xs); color: var(--color-muted);">
+                  (Đã chọn: <span id="step3-selected-count" class="num" style="color: var(--color-accent);">0</span> part)
+                </span>
+              </div>
+              <div style="display: flex; gap: var(--space-xs);">
+                <button type="button" class="btn btn-foxglove btn-sm" id="btn-open-selected-foxglove" disabled>
+                  Mở các part đã chọn trên Foxglove
+                </button>
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-open-folder-foxglove">
+                  Mở cả thư mục trên Foxglove
+                </button>
+              </div>
+            </div>
+
             <table class="custom-table">
               <thead>
                 <tr>
+                  <th scope="col" style="width: 40px; text-align: center;">#</th>
                   <th scope="col">Tên file</th>
                   <th scope="col">Số part</th>
                   <th scope="col">Thời lượng ước tính</th>
@@ -383,9 +405,11 @@
         </div>
 
         <div class="panel-footer-actions">
-          <button type="button" class="btn btn-foxglove" id="btn-open-first-part-foxglove" disabled>
-            Mở part đầu trên Foxglove
-          </button>
+          <div style="display: flex; gap: var(--space-xs);">
+            <button type="button" class="btn btn-foxglove" id="btn-open-folder-foxglove-main" disabled>
+              Mở cả thư mục trên Foxglove
+            </button>
+          </div>
           <div style="display: flex; gap: var(--space-sm);">
             <button type="button" class="btn btn-primary btn-lg" id="btn-execute-split" disabled>
               Di chuyển vào các folder con

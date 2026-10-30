@@ -118,7 +118,8 @@ class PickFileDialogRequest(BaseModel):
 
 
 class PathRequest(BaseModel):
-    path: str
+    path: Optional[str] = None
+    paths: Optional[List[str]] = None
 
 
 @app.post("/api/pick-folder")
@@ -141,7 +142,10 @@ def api_pick_file(req: PickFileDialogRequest):
 
 @app.post("/api/open-foxglove")
 def api_open_foxglove(req: PathRequest):
-    success = launch_foxglove(req.path)
+    target = req.paths if req.paths else req.path
+    if not target:
+        raise HTTPException(status_code=400, detail="Không có đường dẫn file nào được cung cấp.")
+    success = launch_foxglove(target)
     return {"success": success, "foxglove_bin": find_foxglove_bin()}
 
 
