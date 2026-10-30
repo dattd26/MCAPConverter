@@ -278,59 +278,27 @@ function initWebSocket() {
 
 function updateRunningState(isRunning, taskName = "") {
   AppState.isTaskRunning = isRunning;
-  const indicator = document.getElementById("term-status-indicator");
-  const taskChip = document.getElementById("term-task-name");
+  const taskChip = document.getElementById("task-status-chip");
+  const taskText = document.getElementById("task-status-text");
   const btnCancel = document.getElementById("btn-cancel-task");
 
   if (isRunning) {
-    indicator.className = "terminal-indicator running";
-    taskChip.style.display = "inline-block";
-    taskChip.textContent = taskName || "Đang xử lý...";
-    btnCancel.style.display = "inline-flex";
+    if (taskChip) taskChip.style.display = "inline-flex";
+    if (taskText) taskText.textContent = taskName || "Đang xử lý…";
+    if (btnCancel) btnCancel.style.display = "inline-flex";
   } else {
-    indicator.className = "terminal-indicator";
-    taskChip.style.display = "none";
-    btnCancel.style.display = "none";
+    if (taskChip) taskChip.style.display = "none";
+    if (btnCancel) btnCancel.style.display = "none";
   }
 }
 
 function initTerminal() {
-  document.getElementById("btn-clear-log").addEventListener("click", () => {
-    document.getElementById("terminal-body").innerHTML = "";
-  });
-
-  document.getElementById("btn-copy-log").addEventListener("click", () => {
-    const text = document.getElementById("terminal-body").innerText;
-    navigator.clipboard.writeText(text).then(() => {
-      alert("Đã sao chép toàn bộ log vào Clipboard!");
-    });
-  });
+  // Không hiển thị live log trên giao diện theo yêu cầu
 }
 
 function appendTerminalLine(text, forcedClass = null) {
-  const body = document.getElementById("terminal-body");
-  const line = document.createElement("div");
-  line.className = "terminal-line";
-
-  if (forcedClass) {
-    line.classList.add(forcedClass);
-  } else if (text.includes("[LỖI") || text.includes("Error") || text.includes("Exception") || text.includes("Thất bại") || text.includes("THẤT BẠI")) {
-    line.classList.add("error");
-  } else if (text.includes("[CẢNH BÁO]") || text.includes("Warning") || text.includes("Thiếu: part_")) {
-    line.classList.add("warning");
-  } else if (text.includes("[HOÀN THÀNH") || text.includes("[THÀNH CÔNG]") || text.includes("SUCCESS")) {
-    line.classList.add("success");
-  } else if (text.includes("[BẮT ĐẦU") || text.includes("[THÔNG TIN]") || text.includes("==")) {
-    line.classList.add("info");
-  }
-
-  line.textContent = text;
-  body.appendChild(line);
-
-  const autoScroll = document.getElementById("term-autoscroll").checked;
-  if (autoScroll) {
-    body.scrollTop = body.scrollHeight;
-  }
+  // Ghi log vào console của trình duyệt, không hiển thị trên giao diện người dùng
+  console.log(text);
 }
 
 // ==========================================

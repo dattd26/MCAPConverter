@@ -193,4 +193,5 @@ Bước 3: Nạp ngược video vào MCAP multipart
   3. Bước 2: Nạp ngược video CapCut vào MCAP (`inject_video_to_mcap_v2.py`), tích hợp cẩm nang cấu hình CapCut lossless.
   4. Bước 3: Mở Foxglove Studio Desktop xem video & Tách các part vào thư mục con quy ước `..._P1/P2/P3` (mỗi nhóm <= 30 part ~ 30 phút).
   5. Bước 4: Gộp batch tất cả các thư mục con thành 1 file MCAP duy nhất (`<folder_P1>.mcap`) đặt bên trong từng folder và bảo toàn part gốc.
-  6. Tích hợp nút bật cửa sổ chọn thư mục/file native Windows Explorer, tự động tìm thấy Foxglove Studio tại `AppData\Local\Programs\desktop\Foxglove.exe`, stream log qua WebSocket theo thời gian thực.
+  6. Tích hợp nút bật cửa sổ chọn thư mục/file native Windows Explorer, tự động tìm thấy Foxglove Studio tại `AppData\Local\Programs\desktop\Foxglove.exe`.
+  7. Tối ưu giao diện theo Hallmark anti-slop và ẩn live log console trên UI để giữ không gian thao tác gọn gàng, trạng thái tác vụ hiển thị trực tiếp trên thanh header.

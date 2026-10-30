@@ -1,8 +1,7 @@
 /* Hallmark · shape: app screen · genre: modern-minimal · theme: Vantage (by request)
- * nav: edge-aligned · signature: live terminal stream and part inspector · states: hover active focus-visible disabled · vantage: terrain/steel
+ * nav: edge-aligned · signature: part inspector and batch merge controller · states: hover active focus-visible disabled · vantage: terrain/steel
  * axes: dark/grotesk-sans/chromatic-lime · posture: restrained · contrast: pass · v2.0.0 */
 /* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · weakest: E, tightened form layout and state feedback */
-/* waive: 47b · real interactive terminal console stream on app screen */
 @import url("./tokens.css");
 @import url("./base.css");
 
@@ -220,7 +219,7 @@
   margin-inline: auto;
   padding-top: var(--space-lg);
   padding-inline: var(--gutter);
-  padding-bottom: var(--space-3xl);
+  padding-bottom: var(--space-xl);
   width: 100%;
   flex: 1;
 }
@@ -701,99 +700,6 @@
 .custom-table tr:hover td {
   background-color: var(--color-paper-2);
   color: var(--color-ink);
-}
-
-/* ==========================================================================
-   TERMINAL & CONSOLE OUTPUT
-   ========================================================================== */
-.terminal-wrapper {
-  background-color: var(--color-paper);
-  border-top: var(--rule-hair) solid var(--color-rule);
-  width: 100%;
-  position: sticky;
-  bottom: 0;
-  z-index: var(--z-sticky);
-}
-
-.terminal-header {
-  height: 40px;
-  background-color: var(--color-paper-2);
-  border-bottom: var(--rule-hair) solid var(--color-rule);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding-inline: var(--gutter);
-}
-
-.terminal-title-group {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.terminal-indicator {
-  width: 6px;
-  height: 6px;
-  border-radius: var(--radius-pill);
-  background-color: var(--color-muted);
-}
-
-.terminal-indicator.running {
-  background-color: var(--color-accent);
-}
-
-.terminal-title {
-  font-size: var(--text-xs);
-  font-weight: 500;
-  color: var(--color-ink-2);
-  font-family: var(--font-mono);
-}
-
-.terminal-task-chip {
-  font-size: var(--text-xs);
-  color: var(--color-accent);
-  background-color: var(--color-paper-3);
-  padding: var(--space-3xs) var(--space-xs);
-  border-radius: var(--radius-pill);
-  border: var(--rule-hair) solid var(--color-rule-2);
-}
-
-.terminal-actions {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-}
-
-.terminal-body {
-  height: 180px;
-  overflow-y: auto;
-  padding: var(--space-xs) var(--gutter);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  line-height: 1.6;
-  color: var(--color-ink-2);
-  background-color: var(--color-paper);
-}
-
-.terminal-line {
-  white-space: pre-wrap;
-  word-break: break-all;
-}
-
-.terminal-line.success {
-  color: var(--color-success);
-}
-
-.terminal-line.warning {
-  color: var(--color-warning);
-}
-
-.terminal-line.error {
-  color: var(--color-error);
-}
-
-.terminal-line.info {
-  color: var(--color-accent);
 }
 
 /* ==========================================================================
