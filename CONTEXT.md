@@ -197,3 +197,4 @@ Bước 3: Nạp ngược video vào MCAP multipart
   7. Tối ưu giao diện theo Hallmark anti-slop và ẩn live log console trên UI để giữ không gian thao tác gọn gàng, trạng thái tác vụ hiển thị trực tiếp trên thanh header.
    8. Cải tiến Bước 3: Hỗ trợ chọn mở nhiều part đồng thời trên Foxglove Studio (checkbox từng part, nút chọn tất cả, đếm số lượng part đã chọn) hoặc mở toàn bộ thư mục chỉ với 1 click.
    9. Nâng cấp UX chọn Part ở Bước 3: Click cả dòng để chọn, Shift-Click chọn dải part, kéo chuột quét chọn hàng loạt, phím tắt Enter/Esc, click đúp mở nhanh và cố định Sticky Header bảng part sạch sẽ.
+   10. Khắc phục lỗi hiển thị live log terminal trên giao diện: Sửa cơ chế broadcast asyncio từ worker thread nền sang main event loop và khôi phục khung stream console dưới đáy màn hình với tính năng thu gọn/mở rộng, tự cuộn, sao chép.
